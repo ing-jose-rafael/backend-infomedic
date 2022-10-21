@@ -5,7 +5,6 @@ class PerfilDao {
   
   protected static async obtnerPerfiles(res: Response): Promise<any>{
     const datos = await PerfilEsquema.find().sort({_id:-1})
-    
     res.status(200).json(datos)
   }
 
@@ -27,14 +26,14 @@ class PerfilDao {
   }
 
   protected static async crearPerfil(res: Response, req: Request): Promise<any>{
-    const { nombrePerfil } = req.body
+    const { nombrePerfil, estadoPerfil = 1 } = req.body
     
-    const existe = await PerfilEsquema.findOne({nombrePerfil})
+    const existe = await PerfilEsquema.findOne({ nombrePerfil })
     
     if (existe) {
       res.status(400).json({respuesta:"El perfil ya existe"});
     } else {
-      const objPerfil = new PerfilEsquema({nombrePerfil});
+      const objPerfil = new PerfilEsquema({ ...req.body });
       
       // objPerfil.save((miError,result)=>{
       //   if (miError) {
@@ -51,7 +50,7 @@ class PerfilDao {
   }
 
   protected static async actualizarPerfil(req: Request, res: Response): Promise<any>{
-    const { nombrePerfil } = req.body
+    //const { nombrePerfil } = req.body
     const { id } = req.params
     
     try {
@@ -62,8 +61,10 @@ class PerfilDao {
           respuesta: 'No existe el perfil con el id ' + id
         });
       }
+
+
       
-      const datos = await PerfilEsquema.findOneAndUpdate({_id:id},{nombrePerfil},{
+      const datos = await PerfilEsquema.findOneAndUpdate({_id:id},{...req.body},{
         new: true
       })
       

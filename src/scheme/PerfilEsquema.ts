@@ -9,6 +9,11 @@ const PerfilEsquema = new Schema<PerfilEntidad>(
       unique: true, 
       trim: true 
     },
+    estadoPerfil:{
+      type:Number,
+      enum:[ 1, 2 ],
+      default: 1
+    }
   },
   { versionKey: false }
 );
