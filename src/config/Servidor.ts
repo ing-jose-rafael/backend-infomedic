@@ -2,33 +2,54 @@ import cors from "cors";
 import morgan from "morgan";
 import dotenv from "dotenv";
 import express from "express";
+import path from 'path'
 import ConexionDB from "./ConexionDB";
 
 // Acá van los import de las rutas
 import perfilRuta from '../router/PerfilRuta'
+import usuarioRuta from "../router/UsuarioRuta";
 // *************************************************
 
 class Servidor {
   public app: express.Application;
+  private paths: any
 
   constructor() {
     dotenv.config({ path: ".env" });
-    ConexionDB();
     this.app = express();
-    this.iniciarConfiguracion();
+    this.app.set("PORT", process.env.PORT);
+    // Conectar a base de datos
+    ConexionDB();
+    
+    this.paths = {
+      perfil: '/api/perfil',
+      usuario: '/api/usuario',
+    }
+    
+    // Middlewares
+    this. middlewares();
+
+    // Rutas de mi aplicación
     this.iniciarRutas();
   }
 
-  public iniciarConfiguracion() {
-    this.app.set("PORT", process.env.PORT);
-    this.app.use(cors());
-    this.app.use(morgan("dev"));
-    this.app.use(express.json({ limit: "100Mb" }));
-    this.app.use(express.urlencoded({ extended: true }));
+  public  middlewares() {
+    // CORS
+    this.app.use( cors() );
+
+    this.app.use( morgan("dev") );
+
+    // Lectura y parseo del body
+    this.app.use( express.json({ limit: "100Mb" }) );
+    // Directorio Público
+    this.app.use( express.static('./public') );
+    this.app.use( express.urlencoded({ extended: true }) );
   }
 
   public iniciarRutas() {
-    this.app.use('/api/perfiles',perfilRuta)
+
+    this.app.use( this.paths.perfil, perfilRuta )
+    this.app.use( this.paths.usuario, usuarioRuta )
   }
 
   public iniciarServidor() {

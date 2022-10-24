@@ -13,7 +13,7 @@ class PerfilRuta {
     this.configuracion()
   }
   public configuracion(): void{
-    this.apiRutaPerfil.get('/todos',perfilControlador.consulta)
+    this.apiRutaPerfil.get('/',perfilControlador.consulta)
     this.apiRutaPerfil.get('/:id',perfilControlador.consultaPorId)
     this.apiRutaPerfil.post('/',perfilControlador.crear)
     this.apiRutaPerfil.put('/:id',perfilControlador.actualizar)

@@ -6,19 +6,19 @@ const UsuarioEsquema = new Schema<UsuarioEntidad>(
   {
     nombreUsuaio:{
       type: String, 
-      required: true, 
+      required: [true,'El nombre es obligatorio'],
       trim: true
     },
     correoUsuaio:{
       type: String, 
-      required: true, 
+      required: [true,'El correo es obligatorio'], 
       unique: true, 
       trim: true,
       lowercase:true
     },
     claveUsuaio:{
       type: String, 
-      required: true, 
+      required: [true,'La clave es obligatoria'],
       trim: true
     },
     fechaRegistro:{
@@ -33,8 +33,9 @@ const UsuarioEsquema = new Schema<UsuarioEntidad>(
     codPerfil:{
       type: Types.ObjectId,
       ref: 'Perfil',
-      required: true
+      required: [true,'El codigo del perfil es obligatorio'],
     },
+    
   },
   { versionKey: false }
 );
