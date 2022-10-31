@@ -19,6 +19,8 @@ class UsuarioRuta {
     this.apiRutaUsuario.post('/',usuarioControlador.crear)
     this.apiRutaUsuario.put('/:id',usuarioControlador.actualizar)
     this.apiRutaUsuario.delete('/:id',usuarioControlador.eliminar)
+
+    this.apiRutaUsuario.post('/iniciar', usuarioControlador.iniciar);
   }
 }
 

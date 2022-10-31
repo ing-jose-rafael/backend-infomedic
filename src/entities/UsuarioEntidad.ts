@@ -1,20 +1,20 @@
 import PerfilEntidad from "./PerfilEntidad";
 
 export class UsuarioEntidad {
-  public nombreUsuaio: string;
-  public correoUsuaio: string;
-  public claveUsuaio: string;
+  public nombreUsuario: string;
+  public correoUsuario: string;
+  public claveUsuario: string;
   public fechaRegistro: Date;
-  public estadoUsuaio: number;
+  public estadoUsuario: number;
   public codPerfil: PerfilEntidad;
 
   constructor(nom: string, corr: string, cla:string, fec: Date,est: number, perf:PerfilEntidad) {
-    this.nombreUsuaio = nom;
-    this.correoUsuaio = corr;
-    this.claveUsuaio = cla;
+    this.nombreUsuario = nom;
+    this.correoUsuario = corr;
+    this.claveUsuario = cla;
     this.fechaRegistro = fec;
     this.codPerfil = perf;
-    this.estadoUsuaio = est;
+    this.estadoUsuario = est;
   }
 }
 

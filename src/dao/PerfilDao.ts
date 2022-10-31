@@ -1,13 +1,16 @@
 import { Response, Request } from 'express'
 import PerfilEsquema from '../scheme/PerfilEsquema'
+import UsuarioEsquema from '../scheme/UsuarioEsquema'
 
 class PerfilDao {
-  
+
+  // Obtener perfiles en orden descendente (-1)
   protected static async obtnerPerfiles(res: Response): Promise<any>{
     const datos = await PerfilEsquema.find().sort({_id:-1})
     res.status(200).json(datos)
   }
-
+  
+  // Consultar los datos de un perfil por un código específico
   protected static async obtnerPerfilesPorId(req:Request, res: Response): Promise<any>{
     const { id } = req.params
     try {
@@ -25,6 +28,7 @@ class PerfilDao {
 
   }
 
+  // Crear perfil verificando su existencia
   protected static async crearPerfil(res: Response, req: Request): Promise<any>{
     const { nombrePerfil, estadoPerfil = 1 } = req.body
     
@@ -49,6 +53,7 @@ class PerfilDao {
     }
   }
 
+  // Actualizar perfil por código
   protected static async actualizarPerfil(req: Request, res: Response): Promise<any>{
     //const { nombrePerfil } = req.body
     const { id } = req.params
@@ -62,8 +67,6 @@ class PerfilDao {
         });
       }
 
-
-      
       const datos = await PerfilEsquema.findOneAndUpdate({_id:id},{...req.body},{
         new: true
       })
@@ -76,8 +79,15 @@ class PerfilDao {
    
   }
 
+  // Eliminar perfil por código, verificando antes que no tenga usuarios asociados
   protected static async eliminarPerfil(req: Request, res: Response): Promise<any>{
-    const { id } = req.params
+    const { id, codPerfil } = req.params
+    const cantidad = await UsuarioEsquema.countDocuments({codPerfil});
+    
+    if (cantidad>0) {
+      return res.status(400).json({ respuesta: 'Error, el perfil tiene usuarios relacionados' });
+    }
+    
     try {
       
       const perfil = await PerfilEsquema.findById(id).exec();

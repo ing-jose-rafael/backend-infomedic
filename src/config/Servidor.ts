@@ -8,6 +8,7 @@ import ConexionDB from "./ConexionDB";
 // Acá van los import de las rutas
 import perfilRuta from '../router/PerfilRuta'
 import usuarioRuta from "../router/UsuarioRuta";
+import seguridad from "../middleware/seguridad";
 // *************************************************
 
 class Servidor {
@@ -48,7 +49,8 @@ class Servidor {
 
   public iniciarRutas() {
 
-    this.app.use( this.paths.perfil, perfilRuta )
+    // this.app.use( this.paths.perfil, perfilRuta )
+    this.app.use( this.paths.perfil,seguridad.validarJWT, perfilRuta )
     this.app.use( this.paths.usuario, usuarioRuta )
   }
 

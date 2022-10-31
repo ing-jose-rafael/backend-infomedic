@@ -4,19 +4,19 @@ import UsuarioEntidad from "../entities/UsuarioEntidad";
 
 const UsuarioEsquema = new Schema<UsuarioEntidad>(
   {
-    nombreUsuaio:{
+    nombreUsuario:{
       type: String, 
       required: [true,'El nombre es obligatorio'],
       trim: true
     },
-    correoUsuaio:{
+    correoUsuario:{
       type: String, 
       required: [true,'El correo es obligatorio'], 
       unique: true, 
       trim: true,
       lowercase:true
     },
-    claveUsuaio:{
+    claveUsuario:{
       type: String, 
       required: [true,'La clave es obligatoria'],
       trim: true
@@ -25,7 +25,7 @@ const UsuarioEsquema = new Schema<UsuarioEntidad>(
       type:Date,
       default: Date.now()
     },
-    estadoUsuaio:{
+    estadoUsuario:{
       type:Number,
       enum:[ 1, 2 ],
       default: 1
