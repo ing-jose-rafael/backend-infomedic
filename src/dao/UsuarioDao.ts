@@ -4,11 +4,12 @@ import jwt from 'jsonwebtoken';
 import bcryptjs from 'bcryptjs'
 import UsuarioEsquema from '../scheme/UsuarioEsquema';
 import PerfilEsquema from '../scheme/PerfilEsquema';
+import PerfilEntidad from '../entities/PerfilEntidad';
 
 class UsuarioDao {
 
   protected static async obtnerUsuario(res: Response): Promise<any> {
-    const datos = await UsuarioEsquema.find().sort({ _id: -1 }).populate("codPerfil");
+    const datos = await UsuarioEsquema.find().sort({ _id: -1 }).populate('codPerfil','nombrePerfil');
     res.status(200).json(datos)
   }
 
@@ -16,7 +17,7 @@ class UsuarioDao {
     const { id } = req.params
     try {
 
-      const datos = await UsuarioEsquema.findById(id).sort({ _id: -1 }).populate("codPerfil");
+      const datos = await UsuarioEsquema.findById(id).sort({ _id: -1 }).populate('codPerfil','nombrePerfil');
 
       datos
         ? res.status(200).json(datos)
@@ -51,31 +52,40 @@ class UsuarioDao {
   // ************************************************************************************
 
   protected static async crearUsuario(res: Response, req: Request): Promise<any> {
-    const { correoUsuaio, claveUsuaio } = req.body
-    
-    const nombrePerfilPorDefecto = String(process.env.PERFIL_USUARIO_EXTERNO);
-    const jsonPerfil = { nombrePerfil: nombrePerfilPorDefecto };
+    const { correoUsuario, claveUsuario, codPerfil } = req.body
+    let existePerfil;
 
-    const existePerfil = await PerfilEsquema.findOne(jsonPerfil).exec();
-    if (existePerfil) {
-      req.body.codPerfil = existePerfil._id;
-    } else {
-      const objPerfil = new PerfilEsquema(jsonPerfil);
-      objPerfil.save();
-      req.body.codPerfil = objPerfil._id;
+    if (!codPerfil) {
+      const nombrePerfilPorDefecto = String(process.env.PERFIL_USUARIO_EXTERNO);
+      const jsonPerfil = { nombrePerfil: nombrePerfilPorDefecto };
+  
+      existePerfil = await PerfilEsquema.findOne(jsonPerfil).exec();
+      if (existePerfil) {
+        req.body.codPerfil = existePerfil._id;
+      } else {
+        const objPerfil = new PerfilEsquema(jsonPerfil);
+        objPerfil.save();
+        existePerfil = objPerfil;
+        req.body.codPerfil = objPerfil._id;
+      }      
+    }else {
+      existePerfil = await PerfilEsquema.findById({_id:codPerfil});
     }
 
-    const existe = await UsuarioEsquema.findOne({ correoUsuario: correoUsuaio })
+    
+    const existe = await UsuarioEsquema.findOne({ correoUsuario: correoUsuario });
 
+    if ( !existePerfil ) return  res.status(400).json({ respuesta: "El perfil no existe!!" });
+    
     if (existe) {
       res.status(400).json({ respuesta: "El correo ya existe" });
     } else {
-
+      const { nombrePerfil } = existePerfil as PerfilEntidad;
       const obj = new UsuarioEsquema({ ...req.body });
 
       // Encriptar la contraseña
       const salt = bcryptjs.genSaltSync();
-      obj.claveUsuario = bcryptjs.hashSync(claveUsuaio, salt);
+      obj.claveUsuario = bcryptjs.hashSync(claveUsuario, salt);
 
       // obj.save((miError,result)=>{
       //   if (miError) {
@@ -88,8 +98,8 @@ class UsuarioDao {
         .then(result => {
           const datosVisibles = {
             codUsuario: result._id,
-            correo: correoUsuaio,
-            perfil: nombrePerfilPorDefecto
+            correo: correoUsuario,
+            perfil: nombrePerfil 
           };
           const llavePrivada = String(process.env.CLAVE_SECRETA);
           const miToken = jwt.sign(datosVisibles, llavePrivada, { expiresIn: '1h' })

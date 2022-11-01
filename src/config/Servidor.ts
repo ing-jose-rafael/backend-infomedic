@@ -50,8 +50,8 @@ class Servidor {
   public iniciarRutas() {
 
     // this.app.use( this.paths.perfil, perfilRuta )
-    this.app.use( this.paths.perfil,seguridad.validarJWT, perfilRuta )
-    this.app.use( this.paths.usuario, usuarioRuta )
+    this.app.use( this.paths.perfil,seguridad.validarJWT, perfilRuta );
+    this.app.use( this.paths.usuario, usuarioRuta );
   }
 
   public iniciarServidor() {
