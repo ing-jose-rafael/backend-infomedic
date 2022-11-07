@@ -10,7 +10,7 @@ class UsuarioControlador extends UsuarioDao {
     UsuarioControlador.obtnerUsuarioPorId(req,res)
   } 
   public crear(req: Request, res: Response): void {
-    UsuarioControlador.crearUsuario(res,req)
+    UsuarioControlador.crearUsuario(req,res)
   } 
   public actualizar(req: Request, res: Response): void {
     UsuarioControlador.actualizarPerfil(req,res)
@@ -20,7 +20,7 @@ class UsuarioControlador extends UsuarioDao {
   }
 
   public iniciar(req: Request, res: Response): void {
-    UsuarioControlador.iniciarSesion(req.body, res);
+    UsuarioControlador.iniciarSesion(req, res);
   }
 
 

@@ -51,8 +51,10 @@ class UsuarioDao {
   }
   // ************************************************************************************
 
-  protected static async crearUsuario(res: Response, req: Request): Promise<any> {
+  protected static async crearUsuario( req: Request, res: Response): Promise<any> {
     const { correoUsuario, claveUsuario, codPerfil } = req.body
+    
+    
     let existePerfil;
 
     if (!codPerfil) {
@@ -102,8 +104,9 @@ class UsuarioDao {
             perfil: nombrePerfil 
           };
           const llavePrivada = String(process.env.CLAVE_SECRETA);
-          const miToken = jwt.sign(datosVisibles, llavePrivada, { expiresIn: '1h' })
-          res.status(200).json({ respuesta: "Usuario creado", token: miToken })
+          const miToken = jwt.sign(datosVisibles, llavePrivada, { expiresIn: '72h' })
+          res.status(200).json({ tokenMintic: miToken });
+          // res.status(200).json({ respuesta: "Usuario creado", token: miToken })
         })
         .catch(err => res.status(400).json({ respuesta: "No se puede crear el usuario", error: err }));
 
@@ -151,7 +154,7 @@ class UsuarioDao {
 
       // let perfildeletedCountque = await perfil.deleteOne()
       let deleted = await UsuarioEsquema.deleteOne({ _id: id });
-      res.json({ respuesta: 'Usuario eliminado ', elinimado: deleted.deletedCount });
+      res.json({ respuesta: 'Usuario eliminado ', eliminado: deleted.deletedCount });
 
     } catch (error: any) {
       console.log(error.name);
@@ -184,7 +187,7 @@ class UsuarioDao {
               perfil: objeto.codPerfil.nombrePerfil
             };
             const llavePrivada = String(process.env.CLAVE_SECRETA);
-            const miToken = jwt.sign(datosVisibles, llavePrivada, { expiresIn: 86400 });
+            const miToken = jwt.sign(datosVisibles, llavePrivada, { expiresIn: '72h' });
             res.status(200).json({ tokenMintic: miToken });
           } else {
             res.status(400).json({ respuesta: "Credenciales incorrectas" });

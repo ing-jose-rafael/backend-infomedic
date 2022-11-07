@@ -2,13 +2,15 @@ import cors from "cors";
 import morgan from "morgan";
 import dotenv from "dotenv";
 import express from "express";
-import path from 'path'
+// import path from 'path'
 import ConexionDB from "./ConexionDB";
 
 // Acá van los import de las rutas
 import perfilRuta from '../router/PerfilRuta'
 import usuarioRuta from "../router/UsuarioRuta";
 import seguridad from "../middleware/seguridad";
+import citaRuta from "../router/CitaRuta";
+import especialidadRuta from "../router/EspecialidadRuta";
 // *************************************************
 
 class Servidor {
@@ -23,6 +25,8 @@ class Servidor {
     ConexionDB();
     
     this.paths = {
+      cita: '/api/cita',
+      especilidad: '/api/especialidad',
       perfil: '/api/perfil',
       usuario: '/api/usuario',
     }
@@ -50,7 +54,9 @@ class Servidor {
   public iniciarRutas() {
 
     // this.app.use( this.paths.perfil, perfilRuta )
-    this.app.use( this.paths.perfil,seguridad.validarJWT, perfilRuta );
+    this.app.use( this.paths.cita, seguridad.validarJWT, citaRuta );
+    this.app.use( this.paths.especilidad, seguridad.validarJWT, especialidadRuta );
+    this.app.use( this.paths.perfil, seguridad.validarJWT, perfilRuta );
     this.app.use( this.paths.usuario, usuarioRuta );
   }
 

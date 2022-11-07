@@ -23,15 +23,18 @@ class Seguridad {
       })
     } else {
       try {
+
+        const token = req.headers.authorization.split(" ")[1] as string;
+
         const millave = String(process.env.CLAVE_SECRETA);
-        const token = req.headers.authorization.split(' ')[1] as string;
-        const misDatos  = jwt.verify( token, millave );
+        const misDatos = jwt.verify(token, millave);
         req.body.datoUsuario = misDatos;
+
         next();
       } catch (error) {
         res.status(401).json({
           respuesta: 'Token no válido'
-      })
+        })
       }
     }
 

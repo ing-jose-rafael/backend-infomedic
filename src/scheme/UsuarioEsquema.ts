@@ -9,6 +9,11 @@ const UsuarioEsquema = new Schema<UsuarioEntidad>(
       required: [true,'El nombre es obligatorio'],
       trim: true
     },
+    cedulaUsuario:{ 
+      type: String,
+      required: [true,'la cedula es obligatoria'],
+      trim: true
+    },
     correoUsuario:{
       type: String, 
       required: [true,'El correo es obligatorio'], 
@@ -35,7 +40,11 @@ const UsuarioEsquema = new Schema<UsuarioEntidad>(
       ref: 'Perfil',
       required: [true,'El codigo del perfil es obligatorio'],
     },
-    
+    horario:{ type: String },
+    tiempoConsulta:{ type: Number },
+    disponibilidad:{ type: [],default: undefined },
+    especialidades:{ type: [ Types.ObjectId ], ref:'Especilidad',default: undefined },
+    calificación:{ type: Number },
   },
   { versionKey: false }
 );
