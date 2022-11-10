@@ -3,7 +3,7 @@ import PerfilDao from '../dao/PerfilDao'
 
 class PerfilControlador extends PerfilDao {
   public consulta(_req: Request, res: Response): void {
-    PerfilControlador.obtnerPerfiles(res)
+    PerfilControlador.obtenerPerfiles(res)
   } 
   public consultaPorId(req: Request, res: Response): void {
     PerfilControlador.obtnerPerfilesPorId(req,res)

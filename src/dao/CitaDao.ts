@@ -7,10 +7,15 @@ class CitaDao {
 
   // Obtener citas en orden descendente (-1)
   protected static async obtner(res: Response): Promise<any> {
-    const datos = await CitaEsquema.find().sort({ _id: -1 })
-      .populate('codDoctor','nombreUsuario')
-      .populate('codPaciente','nombreUsuario');
-    res.status(200).json(datos)
+    try {
+      const datos = await CitaEsquema.find().sort({ fechaRegistro: 1 })
+        .populate('codDoctor','nombreUsuario')
+        .populate('codPaciente','nombreUsuario');
+      res.status(200).json(datos)
+      
+    } catch (error) {
+      res.status(200).json({respuesta: "Error en la consulta" });
+    }
   }
 
   // Consultar los datos de un cita por un código específico
@@ -18,7 +23,9 @@ class CitaDao {
     const { id } = req.params
     try {
 
-      const datos = await CitaEsquema.findById(id);
+      const datos = await CitaEsquema.findById(id)
+      .populate('codDoctor','nombreUsuario')
+      .populate('codPaciente','nombreUsuario');
 
       datos
         ? res.status(200).json(datos)
@@ -34,6 +41,8 @@ class CitaDao {
   // Crear perfil verificando su existencia
   protected static async crear(req: Request,res: Response): Promise<any> {
     const { codDoctor, codPaciente } = req.body;
+    delete req.body.datoUsuario;
+    delete req.body._id;
     //Todo: vereficar que el id sea de mongoose
     // verificando paciente y doctor
     const [paciente, doctor] = await Promise.all([

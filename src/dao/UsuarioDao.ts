@@ -32,10 +32,10 @@ class UsuarioDao {
 
   // Obtener todos los usuarios con un perfil dado y con datos específicos
   // ************************************************************************************
-  protected static async obtenerUsuariosPerfil(identificador: any, res: Response): Promise<any> {
-    if (Types.ObjectId.isValid(identificador)) {
-      const llave = { _id: identificador };
-      UsuarioEsquema.find({ codPerfil: llave }).sort({ _id: -1 })
+  protected static async obtenerUsuariosPerfil(req:Request, res: Response): Promise<any> {
+    const { codPerfil } = req.params;
+    if (Types.ObjectId.isValid(codPerfil)) {
+      UsuarioEsquema.find({ codPerfil }).sort({ _id: -1 })
         .populate({ path: "codPerfil", select: "nombrePerfil" })
         .exec((miError, objeto) => {
           if (miError) {
@@ -52,60 +52,24 @@ class UsuarioDao {
   // ************************************************************************************
 
   protected static async crearUsuario( req: Request, res: Response): Promise<any> {
-    const { correoUsuario, claveUsuario, codPerfil } = req.body
+    const {  _id, datosUsuario,...data } = req.body
+    data.nombreImagenUsuario = data.nombreImagenUsuario.substring(data.nombreImagenUsuario.lastIndexOf("\\") + 1);
     
     
-    let existePerfil;
+    const existe = await UsuarioEsquema.findOne({ correoUsuario: data.correoUsuario });
 
-    if (!codPerfil) {
-      const nombrePerfilPorDefecto = String(process.env.PERFIL_USUARIO_EXTERNO);
-      const jsonPerfil = { nombrePerfil: nombrePerfilPorDefecto };
-  
-      existePerfil = await PerfilEsquema.findOne(jsonPerfil).exec();
-      if (existePerfil) {
-        req.body.codPerfil = existePerfil._id;
-      } else {
-        const objPerfil = new PerfilEsquema(jsonPerfil);
-        objPerfil.save();
-        existePerfil = objPerfil;
-        req.body.codPerfil = objPerfil._id;
-      }      
-    }else {
-      existePerfil = await PerfilEsquema.findById({_id:codPerfil});
-    }
-
-    
-    const existe = await UsuarioEsquema.findOne({ correoUsuario: correoUsuario });
-
-    if ( !existePerfil ) return  res.status(400).json({ respuesta: "El perfil no existe!!" });
-    
     if (existe) {
-      res.status(400).json({ respuesta: "El correo ya existe" });
+      return res.status(400).json({ respuesta: "El correo ya existe" });
     } else {
-      const { nombrePerfil } = existePerfil as PerfilEntidad;
-      const obj = new UsuarioEsquema({ ...req.body });
-
+      
       // Encriptar la contraseña
       const salt = bcryptjs.genSaltSync();
-      obj.claveUsuario = bcryptjs.hashSync(claveUsuario, salt);
+      data.claveUsuario = bcryptjs.hashSync(data.claveUsuario, salt);
+      const obj = new UsuarioEsquema({ ...data });
 
-      // obj.save((miError,result)=>{
-      //   if (miError) {
-      //     res.status(400).json({respuesta:"No se puede crear el perfil"});
-      //   } else {
-      //     res.status(200).json({respuesta:"Perfil creado", codigo:result._id});
-      //   }
-      // });
       obj.save()
         .then(result => {
-          const datosVisibles = {
-            codUsuario: result._id,
-            correo: correoUsuario,
-            perfil: nombrePerfil 
-          };
-          const llavePrivada = String(process.env.CLAVE_SECRETA);
-          const miToken = jwt.sign(datosVisibles, llavePrivada, { expiresIn: '72h' })
-          res.status(200).json({ tokenMintic: miToken });
+          res.status(200).json({ id: result._id });
           // res.status(200).json({ respuesta: "Usuario creado", token: miToken })
         })
         .catch(err => res.status(400).json({ respuesta: "No se puede crear el usuario", error: err }));
@@ -171,38 +135,13 @@ class UsuarioDao {
     //   })
   }
 
-  // Iniciar sesión
-  protected static async iniciarSesion(req: Request, res: Response): Promise<any> {
-    const { correoUsuario, claveUsuario } = req.body;
-    // const miCorreo = parametros.correoUsuario;
-    // const miClave = parametros.claveUsuario;
-    UsuarioEsquema.findOne({ correoUsuario }).populate({ path: "codPerfil", select: "nombrePerfil" })
-      .exec((miError, objeto) => {
-        if (objeto) {
-          const claveCorrecta = bcryptjs.compareSync(claveUsuario, objeto.claveUsuario);
-          if (claveCorrecta) {
-            const datosVisibles = {
-              codUsuario: objeto._id,
-              correo: correoUsuario,
-              perfil: objeto.codPerfil.nombrePerfil
-            };
-            const llavePrivada = String(process.env.CLAVE_SECRETA);
-            const miToken = jwt.sign(datosVisibles, llavePrivada, { expiresIn: '72h' });
-            res.status(200).json({ tokenMintic: miToken });
-          } else {
-            res.status(400).json({ respuesta: "Credenciales incorrectas" });
-          }
-        } else {
-          res.status(400).json({ respuesta: "Credenciales incorrectas" });
-        }
-      });
-  }
+  
   // Cantidad de usuarios x perfil dado
   // ************************************************************************************
-  protected static async cantidadUsuariosEnPerfil(identificadorPerfil: any, res: Response): Promise<any> {
-    if (Types.ObjectId.isValid(identificadorPerfil)) {
-      const llave = { _id: identificadorPerfil };
-      const cantidad = await UsuarioEsquema.countDocuments({ codPerfil: llave });
+  protected static async cantidadUsuariosEnPerfil(req: Request, res: Response): Promise<any> {
+    const { codPerfil } = req.params;
+    if (Types.ObjectId.isValid(codPerfil)) {
+      const cantidad = await UsuarioEsquema.countDocuments({ codPerfil });
       res.status(200).json({ respuesta: cantidad });
     } else {
       res.status(400).json({ respuesta: "Identificador incorrecto" });

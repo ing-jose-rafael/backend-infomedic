@@ -16,11 +16,13 @@ class UsuarioRuta {
   public configuracion(): void{
     this.apiRutaUsuario.get('/',usuarioControlador.consulta)
     this.apiRutaUsuario.get('/:id',usuarioControlador.consultaPorId)
+    this.apiRutaUsuario.get('perfil/:id',usuarioControlador.consultaXPerfil)
+    this.apiRutaUsuario.get('cantxperfil/:id',usuarioControlador.cantidadEnPerfil)
     this.apiRutaUsuario.post('/',usuarioControlador.crear)
     this.apiRutaUsuario.put('/:id',usuarioControlador.actualizar)
     this.apiRutaUsuario.delete('/:id',usuarioControlador.eliminar)
 
-    this.apiRutaUsuario.post('/iniciar', usuarioControlador.iniciar);
+    // this.apiRutaUsuario.post('/iniciar', usuarioControlador.iniciar);
   }
 }
 

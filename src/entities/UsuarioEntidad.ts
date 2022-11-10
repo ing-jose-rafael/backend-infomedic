@@ -9,6 +9,8 @@ export class UsuarioEntidad {
     public fechaRegistro: Date,
     public estadoUsuario: number,
     public codPerfil: PerfilEntidad,
+    public nombreImagenUsuario?: string,
+    public avatar?: string,
     public horario?:string,
     public tiempoConsulta?:number,
     public disponibilidad?:string[],

@@ -19,8 +19,11 @@ class UsuarioControlador extends UsuarioDao {
     UsuarioControlador.eliminarUsuario(req,res)
   }
 
-  public iniciar(req: Request, res: Response): void {
-    UsuarioControlador.iniciarSesion(req, res);
+  public consultaXPerfil(req: Request, res: Response): void {
+    UsuarioControlador.obtenerUsuariosPerfil(req, res);
+  }
+  public cantidadEnPerfil(req: Request, res: Response): void {
+    UsuarioControlador.cantidadUsuariosEnPerfil(req, res);
   }
 
 

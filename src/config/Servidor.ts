@@ -11,6 +11,7 @@ import usuarioRuta from "../router/UsuarioRuta";
 import seguridad from "../middleware/seguridad";
 import citaRuta from "../router/CitaRuta";
 import especialidadRuta from "../router/EspecialidadRuta";
+import loginRuta from "../router/LoginRuta";
 // *************************************************
 
 class Servidor {
@@ -29,6 +30,7 @@ class Servidor {
       especilidad: '/api/especialidad',
       perfil: '/api/perfil',
       usuario: '/api/usuario',
+      login: '/api/login',
     }
     
     // Middlewares
@@ -52,12 +54,13 @@ class Servidor {
   }
 
   public iniciarRutas() {
+    this.app.use( this.paths.login, loginRuta );
 
     // this.app.use( this.paths.perfil, perfilRuta )
     this.app.use( this.paths.cita, seguridad.validarJWT, citaRuta );
     this.app.use( this.paths.especilidad, seguridad.validarJWT, especialidadRuta );
     this.app.use( this.paths.perfil, seguridad.validarJWT, perfilRuta );
-    this.app.use( this.paths.usuario, usuarioRuta );
+    this.app.use( this.paths.usuario, seguridad.validarJWT, usuarioRuta );
   }
 
   public iniciarServidor() {

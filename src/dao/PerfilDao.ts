@@ -82,8 +82,8 @@ class PerfilDao {
   // Eliminar perfil por código, verificando antes que no tenga usuarios asociados
   protected static async eliminarPerfil(req: Request, res: Response): Promise<any> {
     const { id } = req.params
-    const cantidad = await UsuarioEsquema.countDocuments({ codPerfil:id });
-    
+    const cantidad = await UsuarioEsquema.countDocuments({ codPerfil: id });
+
     if (cantidad > 0) {
       return res.status(400).json({ respuesta: 'Error, el perfil tiene usuarios relacionados' });
     } else {
@@ -99,7 +99,7 @@ class PerfilDao {
 
         // let perfildeletedCountque = await perfil.deleteOne()
         let perfildeleted = await PerfilEsquema.deleteOne({ _id: id });
-        res.json({ respuesta: 'Perfil eliminado ', eliminado: perfildeleted.deletedCount,id });
+        res.json({ respuesta: 'Perfil eliminado ', eliminado: perfildeleted.deletedCount, id });
 
       } catch (error: any) {
         console.log(error.name);
@@ -139,6 +139,17 @@ class PerfilDao {
       res.status(400).json({ Respuesta: "El perfil a actualizar no existe" });
     }
   }
+  // Obtener perfiles con orden y contando la cantidas de usuario que tiene el perfil
+  // ************************************************************************************
+  protected static async obtenerPerfiles(res: Response): Promise<any> {
+    const datos = await PerfilEsquema.aggregate([
+      { $lookup: { from: "Usuario", localField: "_id", foreignField: "codPerfil", as: "cantUsuarios" } },
+      { $addFields: { cantUsuarios: { $size: "$cantUsuarios" } } }
+    ]).sort({ _id: 1 });
+    res.status(200).json(datos);
+  }
+  // ************************************************************************************
+
 
 }
 

@@ -40,6 +40,8 @@ const UsuarioEsquema = new Schema<UsuarioEntidad>(
       ref: 'Perfil',
       required: [true,'El codigo del perfil es obligatorio'],
     },
+    nombreImagenUsuario:{ type: String, default: "noAvatar.png" },
+    avatar:{ type: String, default: "noAvatar" },
     horario:{ type: String },
     tiempoConsulta:{ type: Number },
     disponibilidad:{ type: [],default: undefined },
