@@ -1,4 +1,5 @@
 import { Response, Request } from 'express'
+import CitaEntidad from '../entities/CitaEntidad';
 
 import CitaEsquema from '../scheme/CitaEsquema'
 import UsuarioEsquema from '../scheme/UsuarioEsquema'
@@ -23,7 +24,7 @@ class CitaDao {
     const { id } = req.params
     try {
 
-      const datos = await CitaEsquema.findById(id)
+      const datos = await CitaEsquema.find({codPaciente:id})
       .populate('codDoctor','nombreUsuario')
       .populate('codPaciente','nombreUsuario');
 
@@ -40,17 +41,17 @@ class CitaDao {
 
   // Crear perfil verificando su existencia
   protected static async crear(req: Request,res: Response): Promise<any> {
-    const { codDoctor, codPaciente } = req.body;
-    delete req.body.datoUsuario;
-    delete req.body._id;
-    //Todo: vereficar que el id sea de mongoose
-    // verificando paciente y doctor
+    const { codDoctor, _id,fechaCita } = req.body;
+    // delete req.body.datoUsuario;
+    // delete req.body._id;
+    // //Todo: vereficar que el id sea de mongoose
+    // // verificando paciente y doctor
     const [paciente, doctor] = await Promise.all([
-      UsuarioEsquema.findById({ _id: codDoctor }).sort({ _id: -1 }),
-      UsuarioEsquema.findById({ _id: codPaciente }).sort({ _id: -1 })
+      UsuarioEsquema.findById({ _id }).sort({ _id: -1 }),
+      UsuarioEsquema.findById({ _id: codDoctor }).sort({ _id: -1 })
     ]);
 
-    // const existe = await PerfilEsquema.findOne({ nombrePerfil })
+    // // const existe = await PerfilEsquema.findOne({ nombrePerfil })
 
     if (!paciente) {
       return res.status(400).json({ respuesta: "El paciente no existe" });
@@ -58,8 +59,8 @@ class CitaDao {
     if (!doctor) {
       return res.status(400).json({ respuesta: "El doctor no existe" });
     }
-
-    const obj = new CitaEsquema({ ...req.body });
+    const body = new CitaEntidad(doctor,paciente,'',fechaCita,1);
+    const obj = new CitaEsquema(body);
 
     obj.save()
       .then(result => res.status(200).json({ respuesta: "Cita creada", id: result._id }))

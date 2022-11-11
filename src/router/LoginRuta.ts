@@ -11,7 +11,7 @@ class LoginRuta {
   }
   public configuracion(): void{
     this.apiRuta.post('/', loginControlador.iniciar);
-    this.apiRuta.get('/regitrarse',loginControlador.registrarse)
+    this.apiRuta.post('/registrarse',loginControlador.registrarse)
   }
 }
 

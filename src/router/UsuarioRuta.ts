@@ -17,6 +17,7 @@ class UsuarioRuta {
     this.apiRutaUsuario.get('/',usuarioControlador.consulta)
     this.apiRutaUsuario.get('/:id',usuarioControlador.consultaPorId)
     this.apiRutaUsuario.get('perfil/:id',usuarioControlador.consultaXPerfil)
+    this.apiRutaUsuario.get('/perfil/doctors',usuarioControlador.consultaXDoctor);
     this.apiRutaUsuario.get('cantxperfil/:id',usuarioControlador.cantidadEnPerfil)
     this.apiRutaUsuario.post('/',usuarioControlador.crear)
     this.apiRutaUsuario.put('/:id',usuarioControlador.actualizar)

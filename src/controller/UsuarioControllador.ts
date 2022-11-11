@@ -22,6 +22,9 @@ class UsuarioControlador extends UsuarioDao {
   public consultaXPerfil(req: Request, res: Response): void {
     UsuarioControlador.obtenerUsuariosPerfil(req, res);
   }
+  public consultaXDoctor(req: Request, res: Response): void {
+    UsuarioControlador.obtenerUsuariosDoctores( res);
+  }
   public cantidadEnPerfil(req: Request, res: Response): void {
     UsuarioControlador.cantidadUsuariosEnPerfil(req, res);
   }

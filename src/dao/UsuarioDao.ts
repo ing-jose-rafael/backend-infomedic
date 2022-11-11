@@ -50,6 +50,26 @@ class UsuarioDao {
     }
   }
   // ************************************************************************************
+  // Obtener todos los usuarios con un perfil dado y con datos específicos
+  // ************************************************************************************
+  protected static async obtenerUsuariosDoctores(res: Response): Promise<any> {
+    const existDoc = await PerfilEsquema.findOne({nombrePerfil:'Doctores'});
+    if (existDoc) {
+      UsuarioEsquema.find({ codPerfil:existDoc.id }).sort({ _id: -1 })
+        .populate({ path: "codPerfil", select: "nombrePerfil" })
+        .exec((miError, objeto) => {
+          if (miError) {
+            console.log(miError);
+            res.status(400).json({ respuesta: "Error en la consulta" });
+          } else {
+            res.status(200).json(objeto);
+          }
+        });
+    } else {
+      res.status(400).json({ respuesta: "Identificador incorrecto" });
+    }
+  }
+  // ************************************************************************************
 
   protected static async crearUsuario( req: Request, res: Response): Promise<any> {
     const {  _id, datosUsuario,...data } = req.body
